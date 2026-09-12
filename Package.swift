@@ -14,7 +14,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/devicekit/DeviceKit.git", .upToNextMajor(from: "5.0.0")),
         .package(url: "https://github.com/WenchaoD/FSCalendar.git", .upToNextMajor(from: "2.8.4")),
-        .package(url: "https://github.com/hackiftekhar/IQKeyboardManager.git", .upToNextMajor(from: "6.5.0")),
+        .package(url: "https://github.com/hackiftekhar/IQKeyboardManager.git", .upToNextMajor(from: "7.0.0")),
         .package(url: "https://github.com/CoderMJLee/MJRefresh.git", .upToNextMajor(from: "3.7.6")),
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.6.0")),
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", .upToNextMajor(from: "5.0.0")),
@@ -30,7 +30,7 @@ let package = Package(
             dependencies: [
                 .product(name: "DeviceKit", package: "DeviceKit"),
                 .product(name: "FSCalendar", package: "FSCalendar"),
-                .product(name: "IQKeyboardManagerSwift", package: "IQKeyboardManager"),
+                .product(name: "IQKeyboardManager", package: "IQKeyboardManager"),
                 .product(name: "MJRefresh", package: "MJRefresh"),
                 .product(name: "SnapKit", package: "SnapKit"),
                 .product(name: "SwiftyJSON", package: "SwiftyJSON"),
