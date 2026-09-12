@@ -96,15 +96,16 @@ public class MKSwiftTextSwitchCell: MKSwiftBaseCell {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        let hasNote = !dataModel!.noteMsg.isEmpty
+        guard let dataModel = dataModel else { return }
+        let hasNote = !dataModel.noteMsg.isEmpty
         let msgSize = msgSize()
-        
-        if dataModel!.leftIcon != nil {
+
+        if let leftIcon = dataModel.leftIcon {
             leftIconView.snp.remakeConstraints { make in
                 make.left.equalTo(offsetX)
-                make.width.equalTo(dataModel!.leftIcon!.size.width)
+                make.width.equalTo(leftIcon.size.width)
                 make.centerY.equalTo(msgLabel)
-                make.height.equalTo(dataModel!.leftIcon!.size.height)
+                make.height.equalTo(leftIcon.size.height)
             }
             
             msgLabel.snp.remakeConstraints { make in

@@ -58,7 +58,7 @@ public extension UIImage {
     static func thumbnailWithoutScale(image: UIImage, size: CGSize) -> UIImage? {
         let oldSize = image.size
         var rect = CGRect.zero
-        
+
         if size.width/size.height > oldSize.width/oldSize.height {
             rect.size.width = size.height * oldSize.width / oldSize.height
             rect.size.height = size.height
@@ -70,15 +70,14 @@ public extension UIImage {
             rect.origin.x = 0
             rect.origin.y = (size.height - rect.size.height) / 2
         }
-        
-        UIGraphicsBeginImageContext(size)
-        UIColor.clear.setFill()
-        UIRectFill(CGRect(origin: .zero, size: size))
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return newImage
+
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.clear.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            image.draw(in: rect)
+        }
     }
     
     /// Compresses image to target width while maintaining aspect ratio

@@ -86,7 +86,6 @@ public class MKSwiftAlertView: UIView {
     }
     
     deinit {
-        print("MKSwiftAlertView销毁")
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -113,7 +112,7 @@ public class MKSwiftAlertView: UIView {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(dismiss),
-                name: NSNotification.Name(rawValue: notificationName),
+                name: Notification.Name(notificationName),
                 object: nil
             )
         }

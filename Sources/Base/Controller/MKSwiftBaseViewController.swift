@@ -58,14 +58,11 @@ open class MKSwiftBaseViewController: UIViewController, UIGestureRecognizerDeleg
         navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
 
-    open override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        navigationController?.interactivePopGestureRecognizer?.delegate = self
-    }
-
     open override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        customNavBar.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: MKLayout.topBarHeight)
+        let statusTop = view.safeAreaInsets.top > 0 ? view.safeAreaInsets.top : MKLayout.statusBarHeight
+        let barHeight = statusTop + MKLayout.navigationBarHeight
+        customNavBar.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: barHeight)
     }
 
     open override func viewDidDisappear(_ animated: Bool) {

@@ -118,6 +118,8 @@ public final class MKSwiftProgressHUD: UIView {
     private var showStarted: Date?
     private var paddingConstraints: [NSLayoutConstraint] = []
     private var bezelConstraints: [NSLayoutConstraint] = []
+    private var indicatorConstraints: [NSLayoutConstraint] = []
+    private var labelConstraints: [NSLayoutConstraint] = []
     private let topSpacer = UIView()
     private let bottomSpacer = UIView()
     private var bezelMotionEffects: UIMotionEffectGroup?
@@ -208,11 +210,10 @@ public final class MKSwiftProgressHUD: UIView {
         if graceTime > 0 {
             graceTimer = Timer.scheduledTimer(
                 timeInterval: graceTime,
-                target: self,
-                selector: #selector(handleGraceTimer),
-                userInfo: nil,
                 repeats: false
-            )
+            ) { [weak self] _ in
+                self?.handleGraceTimer()
+            }
         } else {
             show(usingAnimation: useAnimation)
         }
@@ -229,11 +230,10 @@ public final class MKSwiftProgressHUD: UIView {
             if interval < minShowTime {
                 minShowTimer = Timer.scheduledTimer(
                     timeInterval: minShowTime - interval,
-                    target: self,
-                    selector: #selector(handleMinShowTimer),
-                    userInfo: nil,
                     repeats: false
-                )
+                ) { [weak self] _ in
+                    self?.handleMinShowTimer()
+                }
                 return
             }
         }
@@ -244,11 +244,10 @@ public final class MKSwiftProgressHUD: UIView {
         hideDelayTimer?.invalidate()
         hideDelayTimer = Timer.scheduledTimer(
             timeInterval: delay,
-            target: self,
-            selector: #selector(handleHideTimer),
-            userInfo: animated,
             repeats: false
-        )
+        ) { [weak self] _ in
+            self?.hide(animated: animated)
+        }
     }
     
     // MARK: - Private Methods
@@ -386,27 +385,36 @@ public final class MKSwiftProgressHUD: UIView {
             setIndicator(nil)
         }
         
+        // Deactivate previous dynamic constraints
+        NSLayoutConstraint.deactivate(indicatorConstraints)
+        NSLayoutConstraint.deactivate(labelConstraints)
+        indicatorConstraints.removeAll()
+        labelConstraints.removeAll()
+
         // Add constraints for the indicator
         if let indicator = indicator {
-            NSLayoutConstraint.activate([
+            indicatorConstraints.append(contentsOf: [
                 indicator.centerXAnchor.constraint(equalTo: bezelView.centerXAnchor),
                 indicator.topAnchor.constraint(equalTo: topSpacer.bottomAnchor, constant: 15),
                 indicator.widthAnchor.constraint(lessThanOrEqualTo: bezelView.widthAnchor, multiplier: 0.8),
                 indicator.heightAnchor.constraint(lessThanOrEqualTo: bezelView.heightAnchor, multiplier: 0.5)
             ])
-            
+
             // Position the label below the indicator
-            NSLayoutConstraint.activate([
+            labelConstraints.append(contentsOf: [
                 label.topAnchor.constraint(equalTo: indicator.bottomAnchor, constant: 15),
                 label.bottomAnchor.constraint(equalTo: bottomSpacer.topAnchor, constant: -15)
             ])
         } else {
             // When there's no indicator, position the label in the center
-            NSLayoutConstraint.activate([
+            labelConstraints.append(contentsOf: [
                 label.topAnchor.constraint(equalTo: topSpacer.bottomAnchor, constant: 15),
                 label.bottomAnchor.constraint(equalTo: bottomSpacer.topAnchor, constant: -15)
             ])
         }
+
+        NSLayoutConstraint.activate(indicatorConstraints)
+        NSLayoutConstraint.activate(labelConstraints)
     }
     
     private func setIndicator(_ newIndicator: UIView?) {
@@ -497,7 +505,7 @@ public final class MKSwiftProgressHUD: UIView {
         } else {
             showStarted = nil
             bezelView.alpha = 0.0
-            backgroundView.alpha = 1.0
+            backgroundView.alpha = 0.0
             done()
         }
     }
@@ -561,11 +569,12 @@ public final class MKSwiftProgressHUD: UIView {
     private func setNSProgressDisplayLink(enabled: Bool) {
         if enabled, progressObject != nil {
             if progressObjectDisplayLink == nil {
-                progressObjectDisplayLink = CADisplayLink(
-                    target: self,
-                    selector: #selector(updateProgressFromProgressObject)
+                let displayLink = CADisplayLink(
+                    target: DisplayLinkTarget(target: self),
+                    selector: #selector(DisplayLinkTarget.handleDisplayLink)
                 )
-                progressObjectDisplayLink?.add(to: .main, forMode: .default)
+                displayLink.add(to: .main, forMode: .default)
+                progressObjectDisplayLink = displayLink
             }
         } else {
             progressObjectDisplayLink?.invalidate()
@@ -581,23 +590,31 @@ public final class MKSwiftProgressHUD: UIView {
         frame = superview?.bounds ?? .zero
     }
     
-    @objc private func handleGraceTimer(_ timer: Timer) {
+    @objc private func handleGraceTimer() {
         if !hasFinished {
             show(usingAnimation: useAnimation)
         }
     }
-    
-    @objc private func handleMinShowTimer(_ timer: Timer) {
+
+    @objc private func handleMinShowTimer() {
         hide(usingAnimation: useAnimation)
-    }
-    
-    @objc private func handleHideTimer(_ timer: Timer) {
-        guard let animated = timer.userInfo as? Bool else { return }
-        hide(animated: animated)
     }
 }
 
 // MARK: - Supporting Types
+
+private final class DisplayLinkTarget: NSObject {
+    weak var target: MKSwiftProgressHUD?
+
+    init(target: MKSwiftProgressHUD) {
+        self.target = target
+        super.init()
+    }
+
+    @objc func handleDisplayLink() {
+        target?.updateProgressFromProgressObject()
+    }
+}
 
 private protocol ProgressReporting {
     var progress: Float { get set }

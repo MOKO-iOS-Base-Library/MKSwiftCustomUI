@@ -60,7 +60,8 @@ public extension UIView {
     func mk_snapshotImage() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque, 0)
         defer { UIGraphicsEndImageContext() }
-        layer.render(in: UIGraphicsGetCurrentContext()!)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        layer.render(in: context)
         return UIGraphicsGetImageFromCurrentImageContext()
     }
     

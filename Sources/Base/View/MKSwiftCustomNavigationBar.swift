@@ -126,10 +126,11 @@ open class MKSwiftCustomNavigationBar: UIView {
     }
 
     private func layoutBarItems() {
-        let top = MKLayout.statusBarHeight
+        let buttonHeight = MKLayout.navigationBarHeight
+        // 按钮区贴在导航栏底部，避免 statusBarHeight 为 0 时顶到屏幕最上方。
+        let top = max(0, bounds.height - buttonHeight)
         let leftMargin: CGFloat = 12
         let rightMargin: CGFloat = 12
-        let buttonHeight = MKLayout.navigationBarHeight
 
         var leftWidth = measuredButtonWidth(leftButton)
         var rightWidth = measuredButtonWidth(rightButton)
@@ -186,9 +187,7 @@ open class MKSwiftCustomNavigationBar: UIView {
         button.titleLabel?.font = MKFont.font(15)
         button.setTitleColor(.white, for: .normal)
         button.setTitleColor(UIColor.white.withAlphaComponent(0.4), for: .highlighted)
-        if #available(iOS 15.0, *) {
-            button.configuration = nil
-        }
+        button.configuration = nil
         return button
     }
 }

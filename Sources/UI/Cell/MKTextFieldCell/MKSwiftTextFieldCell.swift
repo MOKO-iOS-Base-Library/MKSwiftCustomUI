@@ -121,8 +121,9 @@ public class MKSwiftTextFieldCell: MKSwiftBaseCell {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        
-        let hasNote = !dataModel!.noteMsg.isEmpty
+
+        guard let dataModel = dataModel else { return }
+        let hasNote = !dataModel.noteMsg.isEmpty
         let msgSize = msgSize()
         
         msgLabel.snp.remakeConstraints { make in
@@ -160,7 +161,7 @@ public class MKSwiftTextFieldCell: MKSwiftBaseCell {
         
         textBorderView.snp.remakeConstraints { make in
             make.left.equalTo(msgLabel.snp.right).offset(offsetX)
-            if !dataModel!.unit.isEmpty {
+            if !dataModel.unit.isEmpty {
                 make.right.equalTo(unitLabel.snp.left).offset(-5)
             } else {
                 make.right.equalTo(-offsetX)
@@ -211,10 +212,11 @@ public class MKSwiftTextFieldCell: MKSwiftBaseCell {
     
     private func setupTextField() {
         guard let dataModel = dataModel else { return }
-        
+
         textField.removeFromSuperview()
+        textBorderView.subviews.forEach { $0.removeFromSuperview() }
         textBorderView.removeFromSuperview()
-        
+
         textField.textType = dataModel.textFieldType
         textField.maxLength = dataModel.maxLength
         textField.placeholder = dataModel.textPlaceholder
@@ -224,12 +226,13 @@ public class MKSwiftTextFieldCell: MKSwiftBaseCell {
         textField.textAlignment = dataModel.textAlignment
         textField.clearButtonMode = dataModel.clearButtonMode
         textField.isEnabled = dataModel.textEnable
-        
+
         textBorderView.layer.cornerRadius = dataModel.cellType == .normal ? 6 : 0
-        if dataModel.cellType == .normal {
-            textBorderView.layer.borderColor = dataModel.borderColor.cgColor
-        }
-        
+        textBorderView.layer.borderWidth = 0.5
+        textBorderView.layer.borderColor = dataModel.cellType == .normal
+            ? dataModel.borderColor.cgColor
+            : UIColor.clear.cgColor
+
         if dataModel.cellType == .topLine {
             let topLine = UIView()
             topLine.backgroundColor = MKColor.fromHex(0xDEDEDE)
@@ -239,10 +242,10 @@ public class MKSwiftTextFieldCell: MKSwiftBaseCell {
                 make.height.equalTo(2)
             }
         }
-        
+
         contentView.addSubview(textBorderView)
         textBorderView.addSubview(textField)
-        
+
         setNeedsLayout()
     }
     
@@ -259,8 +262,8 @@ public class MKSwiftTextFieldCell: MKSwiftBaseCell {
         guard let dataModel = dataModel, !dataModel.noteMsg.isEmpty else {
             return .zero
         }
-        
-        let width = contentView.frame.width - 30
+
+        let width = contentView.frame.width - 2 * offsetX
         return dataModel.noteMsg.size(withFont: dataModel.noteMsgFont, maxSize: CGSize(width: width, height: .greatestFiniteMagnitude))
     }
     

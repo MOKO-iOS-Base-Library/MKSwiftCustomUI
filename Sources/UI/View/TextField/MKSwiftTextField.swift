@@ -81,8 +81,6 @@ public class MKSwiftTextField: UITextField {
     }
     
     public override func delete(_ sender: Any?) {
-        // Required to prevent crash when delete is called from UIMenuController
-        print(sender as Any)
     }
     
     public override func drawPlaceholder(in rect: CGRect) {

@@ -81,18 +81,19 @@ import MKBaseSwiftModule
               strings.count == colors.count else {
             return NSAttributedString(string: "")
         }
-        
+
         let combinedString = strings.joined()
         let attributedString = NSMutableAttributedString(string: combinedString)
-        
+
         var position = 0
         for (index, string) in strings.enumerated() {
-            let range = NSRange(location: position, length: string.count)
+            let nsString = string as NSString
+            let range = NSRange(location: position, length: nsString.length)
             attributedString.addAttribute(.font, value: fonts[index], range: range)
             attributedString.addAttribute(.foregroundColor, value: colors[index], range: range)
-            position += string.count
+            position += nsString.length
         }
-        
+
         return attributedString
     }
     

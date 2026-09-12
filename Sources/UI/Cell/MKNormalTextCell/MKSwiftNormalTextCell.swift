@@ -31,24 +31,26 @@ public class MKSwiftNormalTextCellModel {
     public var noteMsg: String = ""
     public var noteMsgColor: UIColor = MKColor.defaultText
     public var noteMsgFont: UIFont = MKFont.font(12)
-    
+
+    private let offsetX: CGFloat = 15
+
     public func cellHeightWithContentWidth(_ width: CGFloat) -> CGFloat {
         let maxMsgWidth: CGFloat
         if let icon = leftIcon {
-            maxMsgWidth = width / 2 - 15 - 3 - icon.size.width - 3
+            maxMsgWidth = width / 2 - offsetX - 3 - icon.size.width - 3
         } else {
-            maxMsgWidth = width / 2 - 15 - 3
+            maxMsgWidth = width / 2 - offsetX - 3
         }
-        
+
         let msgSize = leftMsg.size(withFont: leftMsgTextFont, maxSize: CGSize(width: maxMsgWidth, height: .greatestFiniteMagnitude))
-        
+
         guard !noteMsg.isEmpty else {
-            return max(msgSize.height + 2 * 15, 50)
+            return max(msgSize.height + 2 * offsetX, 50)
         }
-        
-        let noteSize = noteMsg.size(withFont: noteMsgFont, maxSize: CGSize(width: (width - 2 * 15), height: .greatestFiniteMagnitude))
-        
-        return max(msgSize.height + 2 * 15, 50) + noteSize.height + 10
+
+        let noteSize = noteMsg.size(withFont: noteMsgFont, maxSize: CGSize(width: (width - 2 * offsetX), height: .greatestFiniteMagnitude))
+
+        return max(msgSize.height + 2 * offsetX, 50) + noteSize.height + 10
     }
     
     public init() {}  
@@ -77,7 +79,7 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
     // MARK: - UI Components
     private var leftIcon: UIImageView?
     
-    private let offset_X: CGFloat = 15
+    private let offsetX: CGFloat = 15
     
     // MARK: - Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -104,12 +106,12 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
             if let leftIcon = leftIcon {
                 make.left.equalTo(leftIcon.snp.right).offset(3)
             } else {
-                make.left.equalToSuperview().offset(offset_X)
+                make.left.equalToSuperview().offset(offsetX)
             }
             make.right.equalTo(contentView.snp.centerX).offset(-3)
             
             if hasNote {
-                make.top.equalToSuperview().offset(offset_X)
+                make.top.equalToSuperview().offset(offsetX)
             } else {
                 make.centerY.equalToSuperview()
             }
@@ -118,7 +120,7 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
         
         if let leftIcon = leftIcon {
             leftIcon.snp.remakeConstraints { make in
-                make.left.equalToSuperview().offset(offset_X)
+                make.left.equalToSuperview().offset(offsetX)
                 make.width.equalTo(leftIcon.image!.size.width)
                 make.centerY.equalTo(leftMsgLabel.snp.centerY)
                 make.height.equalTo(leftIcon.image!.size.height)
@@ -145,9 +147,9 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
         
         let noteSize = self.noteSize()
         noteLabel.snp.remakeConstraints { make in
-            make.left.equalToSuperview().offset(offset_X)
-            make.right.equalToSuperview().offset(-offset_X)
-            make.bottom.equalToSuperview().offset(-offset_X)
+            make.left.equalToSuperview().offset(offsetX)
+            make.right.equalToSuperview().offset(-offsetX)
+            make.bottom.equalToSuperview().offset(-offsetX)
             make.height.equalTo(noteSize.height)
         }
     }
@@ -157,26 +159,22 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
         guard let text = leftMsgLabel.text, !text.isEmpty else {
             return .zero
         }
-        
-        var maxMsgWidth = contentView.frame.width / 2 - offset_X - 3
+
+        var maxMsgWidth = contentView.frame.width / 2 - offsetX - 3
         if let leftIcon = leftIcon {
             maxMsgWidth -= leftIcon.image!.size.width + 3
         }
-        
-        let size = text.size(withFont: leftMsgLabel.font, maxSize: CGSize(width: maxMsgWidth, height: .greatestFiniteMagnitude))
-        
-        return CGSize(width: maxMsgWidth, height: size.height)
+
+        return text.size(withFont: leftMsgLabel.font, maxSize: CGSize(width: maxMsgWidth, height: .greatestFiniteMagnitude))
     }
-    
+
     private func noteSize() -> CGSize {
         guard let text = noteLabel.text, !text.isEmpty else {
             return .zero
         }
-        
-        let width = contentView.frame.width - 2 * offset_X
-        let size = text.size(withFont: noteLabel.font, maxSize: CGSize(width: width, height: .greatestFiniteMagnitude))
-    
-        return CGSize(width: width, height: size.height)
+
+        let width = contentView.frame.width - 2 * offsetX
+        return text.size(withFont: noteLabel.font, maxSize: CGSize(width: width, height: .greatestFiniteMagnitude))
     }
     
     // MARK: - UI Setup

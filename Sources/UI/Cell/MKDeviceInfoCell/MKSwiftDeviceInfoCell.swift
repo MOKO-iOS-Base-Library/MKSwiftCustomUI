@@ -71,7 +71,7 @@ public class MKSwiftDeviceInfoCell: MKSwiftBaseCell {
             make.height.equalTo(leftSize?.height ?? MKFont.font(15).lineHeight)
         }
         
-        let rightSize = rightMsgLabel.text?.size(withFont: msgLabel.font, maxSize: CGSize(width: (contentView.frame.width / 2 - 15 - 5), height: .greatestFiniteMagnitude))
+        let rightSize = rightMsgLabel.text?.size(withFont: rightMsgLabel.font, maxSize: CGSize(width: (contentView.frame.width / 2 - 15 - 5), height: .greatestFiniteMagnitude))
         
         rightMsgLabel.snp.remakeConstraints { make in
             make.right.equalToSuperview().offset(-15)

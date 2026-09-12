@@ -7,15 +7,15 @@
 
 import UIKit
 
-open class MKSwiftBaseNavigationController:UINavigationController {
+open class MKSwiftBaseNavigationController: UINavigationController {
     open override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         if self.children.count > 0 {
-            viewController.hidesBottomBarWhenPushed = true;
+            viewController.hidesBottomBarWhenPushed = true
         }
-        super.pushViewController(viewController, animated: animated);
+        super.pushViewController(viewController, animated: animated)
     }
-    
+
     open override var preferredStatusBarStyle: UIStatusBarStyle {
-        return self.topViewController?.preferredStatusBarStyle ?? .default;
+        return self.topViewController?.preferredStatusBarStyle ?? .default
     }
 }
