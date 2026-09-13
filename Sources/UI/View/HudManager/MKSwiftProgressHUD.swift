@@ -212,7 +212,9 @@ public final class MKSwiftProgressHUD: UIView {
                 withTimeInterval: graceTime,
                 repeats: false
             ) { [weak self] _ in
-                self?.handleGraceTimer()
+                MainActor.assumeIsolated {
+                    self?.handleGraceTimer()
+                }
             }
         } else {
             show(usingAnimation: useAnimation)
@@ -232,7 +234,9 @@ public final class MKSwiftProgressHUD: UIView {
                     withTimeInterval: minShowTime - interval,
                     repeats: false
                 ) { [weak self] _ in
-                    self?.handleMinShowTimer()
+                    MainActor.assumeIsolated {
+                        self?.handleMinShowTimer()
+                    }
                 }
                 return
             }
@@ -246,7 +250,9 @@ public final class MKSwiftProgressHUD: UIView {
             withTimeInterval: delay,
             repeats: false
         ) { [weak self] _ in
-            self?.hide(animated: animated)
+            MainActor.assumeIsolated {
+                self?.hide(animated: animated)
+            }
         }
     }
     
@@ -603,6 +609,7 @@ public final class MKSwiftProgressHUD: UIView {
 
 // MARK: - Supporting Types
 
+@MainActor
 private final class DisplayLinkTarget: NSObject {
     weak var target: MKSwiftProgressHUD?
 
@@ -616,11 +623,12 @@ private final class DisplayLinkTarget: NSObject {
     }
 }
 
+@MainActor
 private protocol ProgressReporting {
     var progress: Float { get set }
 }
 
-public final class MKRoundProgressView: UIView, @preconcurrency ProgressReporting {
+public final class MKRoundProgressView: UIView, ProgressReporting {
     public var progress: Float = 0 {
         didSet { setNeedsDisplay() }
     }
@@ -737,7 +745,7 @@ public final class MKRoundProgressView: UIView, @preconcurrency ProgressReportin
     }
 }
 
-public final class MKBarProgressView: UIView, @preconcurrency ProgressReporting {
+public final class MKBarProgressView: UIView, ProgressReporting {
     public var progress: Float = 0 {
         didSet { setNeedsDisplay() }
     }
