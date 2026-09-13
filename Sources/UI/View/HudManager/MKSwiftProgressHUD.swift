@@ -209,7 +209,7 @@ public final class MKSwiftProgressHUD: UIView {
         
         if graceTime > 0 {
             graceTimer = Timer.scheduledTimer(
-                timeInterval: graceTime,
+                withTimeInterval: graceTime,
                 repeats: false
             ) { [weak self] _ in
                 self?.handleGraceTimer()
@@ -229,7 +229,7 @@ public final class MKSwiftProgressHUD: UIView {
             let interval = Date().timeIntervalSince(showStarted)
             if interval < minShowTime {
                 minShowTimer = Timer.scheduledTimer(
-                    timeInterval: minShowTime - interval,
+                    withTimeInterval: minShowTime - interval,
                     repeats: false
                 ) { [weak self] _ in
                     self?.handleMinShowTimer()
@@ -243,7 +243,7 @@ public final class MKSwiftProgressHUD: UIView {
     public func hide(animated: Bool, afterDelay delay: TimeInterval) {
         hideDelayTimer?.invalidate()
         hideDelayTimer = Timer.scheduledTimer(
-            timeInterval: delay,
+            withTimeInterval: delay,
             repeats: false
         ) { [weak self] _ in
             self?.hide(animated: animated)
