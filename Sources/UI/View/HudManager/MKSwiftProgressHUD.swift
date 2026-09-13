@@ -582,7 +582,7 @@ public final class MKSwiftProgressHUD: UIView {
         }
     }
     
-    @objc private func updateProgressFromProgressObject() {
+    @objc func updateProgressFromProgressObject() {
         progress = Float(progressObject?.fractionCompleted ?? 0)
     }
     
