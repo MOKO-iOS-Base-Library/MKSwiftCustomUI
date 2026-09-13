@@ -58,25 +58,24 @@ public extension UIView {
     /// Creates a snapshot image of the complete view hierarchy
     /// - Returns: An optional UIImage containing the snapshot
     func mk_snapshotImage() -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque, 0)
-        defer { UIGraphicsEndImageContext() }
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        layer.render(in: context)
-        return UIGraphicsGetImageFromCurrentImageContext()
+        let format = UIGraphicsImageRendererFormat()
+        format.opaque = isOpaque
+        let renderer = UIGraphicsImageRenderer(size: bounds.size, format: format)
+        return renderer.image { context in
+            layer.render(in: context.cgContext)
+        }
     }
     
     /// Creates a snapshot image of the complete view hierarchy
     /// - Parameter afterUpdates: A Boolean value that indicates whether the snapshot should be rendered after recent changes have been incorporated
     /// - Returns: An optional UIImage containing the snapshot
     func mk_snapshotImage(afterUpdates: Bool) -> UIImage? {
-        if !responds(to: #selector(UIView.drawHierarchy(in:afterScreenUpdates:))) {
-            return mk_snapshotImage()
+        let format = UIGraphicsImageRendererFormat()
+        format.opaque = isOpaque
+        let renderer = UIGraphicsImageRenderer(size: bounds.size, format: format)
+        return renderer.image { _ in
+            drawHierarchy(in: bounds, afterScreenUpdates: afterUpdates)
         }
-        
-        UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque, 0)
-        defer { UIGraphicsEndImageContext() }
-        drawHierarchy(in: bounds, afterScreenUpdates: afterUpdates)
-        return UIGraphicsGetImageFromCurrentImageContext()
     }
     
     /// Creates a snapshot PDF of the complete view hierarchy
@@ -180,9 +179,12 @@ public extension UIView {
             return convert(point, to: view)
         }
         
-        var convertedPoint = convert(point, to: from)
-        convertedPoint = to!.convert(convertedPoint, from: from!)
-        convertedPoint = view.convert(convertedPoint, from: to!)
+        guard let fromView = from, let toView = to else {
+            return convert(point, to: view)
+        }
+        var convertedPoint = convert(point, to: fromView)
+        convertedPoint = toView.convert(convertedPoint, from: fromView)
+        convertedPoint = view.convert(convertedPoint, from: toView)
         return convertedPoint
     }
     
@@ -207,9 +209,12 @@ public extension UIView {
             return convert(point, from: view)
         }
         
-        var convertedPoint = from!.convert(point, from: view)
-        convertedPoint = to!.convert(convertedPoint, from: from!)
-        convertedPoint = convert(convertedPoint, from: to!)
+        guard let fromView = from, let toView = to else {
+            return convert(point, from: view)
+        }
+        var convertedPoint = fromView.convert(point, from: view)
+        convertedPoint = toView.convert(convertedPoint, from: fromView)
+        convertedPoint = convert(convertedPoint, from: toView)
         return convertedPoint
     }
     
@@ -229,18 +234,21 @@ public extension UIView {
         
         let from = (self as? UIWindow) ?? window
         let to = (view as? UIWindow) ?? view.window
-        
+
         if from == nil || to == nil {
             return convert(rect, to: view)
         }
-        
+
         if from == to {
             return convert(rect, to: view)
         }
-        
-        var convertedRect = convert(rect, to: from!)
-        convertedRect = to!.convert(convertedRect, from: from!)
-        convertedRect = view.convert(convertedRect, from: to!)
+
+        guard let fromView = from, let toView = to else {
+            return convert(rect, to: view)
+        }
+        var convertedRect = convert(rect, to: fromView)
+        convertedRect = toView.convert(convertedRect, from: fromView)
+        convertedRect = view.convert(convertedRect, from: toView)
         return convertedRect
     }
     
@@ -265,9 +273,12 @@ public extension UIView {
             return convert(rect, from: view)
         }
         
-        var convertedRect = from!.convert(rect, from: view)
-        convertedRect = to!.convert(convertedRect, from: from!)
-        convertedRect = convert(convertedRect, from: to!)
+        guard let fromView = from, let toView = to else {
+            return convert(rect, from: view)
+        }
+        var convertedRect = fromView.convert(rect, from: view)
+        convertedRect = toView.convert(convertedRect, from: fromView)
+        convertedRect = convert(convertedRect, from: toView)
         return convertedRect
     }
 }

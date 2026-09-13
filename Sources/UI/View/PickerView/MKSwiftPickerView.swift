@@ -16,7 +16,6 @@ public class MKSwiftPickerView: UIView {
                            selectedRow: Int = 0,
                            selectionHandler: @escaping (Int) -> Void) {
         guard !dataList.isEmpty, selectedRow < dataList.count else {
-            print("Invalid data for picker view")
             return
         }
         
@@ -106,7 +105,6 @@ public class MKSwiftPickerView: UIView {
     }
     
     deinit {
-        print("MKSwiftPickerView deallocated")
         NotificationCenter.default.removeObserver(self)
     }
     

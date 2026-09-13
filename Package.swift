@@ -30,7 +30,7 @@ let package = Package(
             dependencies: [
                 .product(name: "DeviceKit", package: "DeviceKit"),
                 .product(name: "FSCalendar", package: "FSCalendar"),
-                .product(name: "IQKeyboardManager", package: "IQKeyboardManager"),
+                .product(name: "IQKeyboardManagerSwift", package: "IQKeyboardManager"),
                 .product(name: "MJRefresh", package: "MJRefresh"),
                 .product(name: "SnapKit", package: "SnapKit"),
                 .product(name: "SwiftyJSON", package: "SwiftyJSON"),
@@ -46,7 +46,7 @@ let package = Package(
             ],
             swiftSettings: [
                 .define("DEBUG", .when(configuration: .debug)),
-                .define("IOS15_OR_LATER")
+                .define("IOS18_OR_LATER")
             ],
             linkerSettings: [
                 .linkedLibrary("z"),

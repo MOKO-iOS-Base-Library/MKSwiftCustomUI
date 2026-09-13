@@ -98,7 +98,7 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
     public override func layoutSubviews() {
         super.layoutSubviews()
         
-        let hasNote = !noteLabel.text!.isEmpty
+        let hasNote = !(noteLabel.text?.isEmpty ?? true)
         
         let msgSize = self.msgSize()
         
@@ -118,12 +118,12 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
             make.height.equalTo(msgSize.height)
         }
         
-        if let leftIcon = leftIcon {
+        if let leftIcon = leftIcon, let imageSize = leftIcon.image?.size {
             leftIcon.snp.remakeConstraints { make in
                 make.left.equalToSuperview().offset(offsetX)
-                make.width.equalTo(leftIcon.image!.size.width)
+                make.width.equalTo(imageSize.width)
                 make.centerY.equalTo(leftMsgLabel.snp.centerY)
-                make.height.equalTo(leftIcon.image!.size.height)
+                make.height.equalTo(imageSize.height)
             }
         }
         
@@ -161,8 +161,8 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
         }
 
         var maxMsgWidth = contentView.frame.width / 2 - offsetX - 3
-        if let leftIcon = leftIcon {
-            maxMsgWidth -= leftIcon.image!.size.width + 3
+        if let leftIcon = leftIcon, let imageSize = leftIcon.image?.size {
+            maxMsgWidth -= imageSize.width + 3
         }
 
         return text.size(withFont: leftMsgLabel.font, maxSize: CGSize(width: maxMsgWidth, height: .greatestFiniteMagnitude))
@@ -198,8 +198,9 @@ public class MKSwiftNormalTextCell: MKSwiftBaseCell {
         leftIcon = nil
         
         if let icon = dataModel.leftIcon {
-            leftIcon = UIImageView(image: icon)
-            contentView.addSubview(leftIcon!)
+            let imageView = UIImageView(image: icon)
+            leftIcon = imageView
+            contentView.addSubview(imageView)
         }
         
         noteLabel.text = dataModel.noteMsg

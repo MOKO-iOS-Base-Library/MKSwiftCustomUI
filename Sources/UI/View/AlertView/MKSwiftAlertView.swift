@@ -380,7 +380,7 @@ public class MKSwiftAlertView: UIView {
         let size = NSString(string: alertMessage).boundingRect(
             with: CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [NSAttributedString.Key.font: messageLabel.font!],
+            attributes: [NSAttributedString.Key.font: messageLabel.font ?? UIFont.systemFont(ofSize: 14)],
             context: nil
         )
         
